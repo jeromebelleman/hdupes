@@ -1,0 +1,61 @@
+#! /usr/bin/env python
+
+'''
+If fdupes stood for "find duplicates", hdupes will stand for "handle
+duplicates".
+'''
+
+import sys
+import os
+import argparse
+
+def run(dupeset, dryrun):
+    '''
+    Run the changes
+    '''
+
+    for link in dupeset['ln']:
+        print "ln -fs '%s' '%s'" % (dupeset['src'], link)
+        if not dryrun:
+            os.remove(link)
+            os.symlink(dupeset['src'], link)
+    for removal in dupeset['rm']:
+        print "rm -f '%s'" % removal
+        if not dryrun:
+            os.remove(removal)
+
+
+def main():
+    '''
+    Main loop
+    '''
+
+    parser = argparse.ArgumentParser(description="Handle duplicates.")
+    parser.add_argument('report')
+    parser.add_argument('--dryrun', action='store_true')
+    args = parser.parse_args()
+
+    dupeset = {'ln': [], 'rm': []}
+    with open(args.report) as fhl:
+        for line in fhl:
+            line = line.strip()
+
+            if line.startswith('@ln '):
+                dupeset['ln'].append(' '.join(line.split()[1:]))
+            elif line.startswith('@rm '):
+                dupeset['rm'].append(' '.join(line.split()[1:]))
+            elif not line:
+                run(dupeset, args.dryrun)
+                dupeset = {'ln': [], 'rm': []}
+            elif 'src' in dupeset:
+                print >> sys.stderr, \
+                    "%s is already a link source - skipping" % dupeset['src']
+                continue
+            else:
+                dupeset['src'] = os.path.abspath(line)
+
+    run(dupeset, args.dryrun)
+
+
+if __name__ == '__main__':
+    sys.exit(main())
