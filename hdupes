@@ -32,29 +32,34 @@ def main():
 
     parser = argparse.ArgumentParser(description="Handle duplicates.")
     parser.add_argument('report')
-    parser.add_argument('--dryrun', action='store_true')
+    parser.add_argument('-n', '--dryrun', action='store_true')
     args = parser.parse_args()
 
     dupeset = {'ln': [], 'rm': []}
+    usage = 0
+    first = True
     with open(args.report) as fhl:
         for line in fhl:
             line = line.strip()
 
             if line.startswith('@ln '):
                 dupeset['ln'].append(' '.join(line.split()[1:]))
+                usage += os.path.getsize(line)
             elif line.startswith('@rm '):
                 dupeset['rm'].append(' '.join(line.split()[1:]))
+                usage += os.path.getsize(line)
             elif not line:
                 run(dupeset, args.dryrun)
                 dupeset = {'ln': [], 'rm': []}
-            elif 'src' in dupeset:
-                print >> sys.stderr, \
-                    "%s is already a link source - skipping" % dupeset['src']
-                continue
+                first = True
             else:
                 dupeset['src'] = os.path.abspath(line)
+                if first:
+                    first = False
+                else:
+                    usage += os.path.getsize(line)
 
-    run(dupeset, args.dryrun)
+    print "Duplicate usage: %d MB" % (usage / 1024 / 1024)
 
 
 if __name__ == '__main__':
