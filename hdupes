@@ -69,6 +69,8 @@ def main():
                 else:
                     usage += os.path.getsize(line)
 
+        run(dupeset, args.dryrun)
+
     print "Duplicate usage: %d MB" % (usage / 1024 / 1024)
 
 
