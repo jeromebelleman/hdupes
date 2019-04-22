@@ -25,6 +25,14 @@ def run(dupeset, dryrun):
             os.remove(removal)
 
 
+def getargs(line):
+    '''
+    Get line arguments
+    '''
+
+    return ' '.join(line.split()[1:])
+
+
 def main():
     '''
     Main loop
@@ -43,11 +51,13 @@ def main():
             line = line.strip()
 
             if line.startswith('@ln '):
-                dupeset['ln'].append(' '.join(line.split()[1:]))
-                usage += os.path.getsize(line)
+                lineargs = getargs(line)
+                dupeset['ln'].append(lineargs)
+                usage += os.path.getsize(lineargs)
             elif line.startswith('@rm '):
-                dupeset['rm'].append(' '.join(line.split()[1:]))
-                usage += os.path.getsize(line)
+                lineargs = getargs(line)
+                dupeset['rm'].append(lineargs)
+                usage += os.path.getsize(lineargs)
             elif not line:
                 run(dupeset, args.dryrun)
                 dupeset = {'ln': [], 'rm': []}
