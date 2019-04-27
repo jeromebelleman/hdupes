@@ -1,3 +1,7 @@
+# Pylint should pass
+pylint hdupes
+>>>=0
+
 # The program should exit zero in dry-run and print the correct output
 ./hdupes -nr tests/report.fdupes
 >>> /ln -fs '.*\/hdupes\/tests\/tmp\/00\/b' 'tests\/tmp\/00\/c'
