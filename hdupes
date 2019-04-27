@@ -8,6 +8,9 @@ duplicates".
 import sys
 import os
 import argparse
+import subprocess
+import tempfile
+
 
 def run(dupeset, dryrun):
     '''
@@ -38,15 +41,26 @@ def main():
     Main loop
     '''
 
+    # Parse arguments
     parser = argparse.ArgumentParser(description="Handle duplicates.")
-    parser.add_argument('report')
+    parser.add_argument('-r', '--report')
     parser.add_argument('-n', '--dryrun', action='store_true')
     args = parser.parse_args()
 
+    # Run fdupes if needs be
+    if args.report:
+        report = args.report
+    else:
+        tmp = tempfile.NamedTemporaryFile()
+        subprocess.call(['fdupes', '-r', '.'], stdout=tmp)
+        subprocess.call(['vim', tmp.name])
+        report = tmp.name
+
+    # Process report
     dupeset = {'ln': [], 'rm': []}
     usage = 0
     first = True
-    with open(args.report) as fhl:
+    with open(report) as fhl:
         for line in fhl:
             line = line.strip()
 
