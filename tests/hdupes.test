@@ -1,0 +1,25 @@
+# The program should exit zero in dry-run and print the correct output
+./hdupes -nr tests/report.fdupes
+>>> /ln -fs '.*\/hdupes\/tests\/tmp\/00\/b' 'tests\/tmp\/00\/c'
+rm -f 'tests\/tmp\/00\/a'
+Duplicate usage: 0 MB/
+>>>= 0
+
+# The program should exit zero and print the correct output
+./hdupes -r tests/report.fdupes
+>>> /ln -fs '.*\/hdupes\/tests\/tmp\/00\/b' 'tests\/tmp\/00\/c'
+rm -f 'tests\/tmp\/00\/a'
+Duplicate usage: 0 MB/
+>>>= 0
+
+# File a should be removed
+ls tests/tmp/00/a
+>>>= 2
+
+# File b should still be there
+ls tests/tmp/00/b
+>>>= 0
+
+# File c should be a symlink
+ls -l tests/tmp/00/c | grep -- '->'
+>>>= 0
