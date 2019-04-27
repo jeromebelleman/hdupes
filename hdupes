@@ -94,6 +94,7 @@ def main():
         # Write leftover sets
         tmp = tempfile.NamedTemporaryFile()
         print >> tmp, '\n'.join(lines)
+        tmp.flush()
 
         # Start Vim
         subprocess.call(['vim', tmp.name])
