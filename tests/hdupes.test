@@ -27,3 +27,23 @@ ls tmp/00/b
 # File c should be a symlink
 ls -l tmp/00/c | grep -- '->'
 >>>= 0
+
+# Don't skip any sets if no skip extension supplied
+python -c 'import hdupes; print "\n".join(hdupes.skip([], open("ext.fdupes"))).strip()'
+>>>
+./a
+./c
+./b
+
+./c.foo
+./b.foo
+./a.foo
+>>>= 0
+
+# Skip sets
+python -c 'import hdupes; print "\n".join(hdupes.skip(["foo"], open("ext.fdupes"))).strip()'
+>>>
+./a
+./c
+./b
+>>>= 0

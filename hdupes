@@ -10,6 +10,7 @@ import os
 import argparse
 import subprocess
 import tempfile
+import yaml
 
 
 def run(dupeset, dryrun):
@@ -36,6 +37,32 @@ def getargs(line):
     return ' '.join(line.split()[1:])
 
 
+def skip(exts, fhl):
+    '''
+    Skip sets by extension
+    '''
+
+    lines = []
+    dupset = []
+    doskip = False
+
+    for line in fhl:
+        line = line.strip()
+        dupset.append(line)
+        if os.path.splitext(line)[1][1:] in exts:
+            doskip = True
+        elif not line:
+            if not doskip:
+                lines.extend(dupset)
+            dupset = []
+            doskip = False
+
+    if not doskip:
+        lines.extend(dupset)
+
+    return lines
+
+
 def main():
     '''
     Main loop
@@ -47,13 +74,31 @@ def main():
     parser.add_argument('-n', '--dryrun', action='store_true')
     args = parser.parse_args()
 
+    # Load config file
+    try:
+        with open('.hdupes.yaml') as fhl:
+            cfg = yaml.load(fhl)
+    except IOError:
+        cfg = {'skipexts': []}
+
     # Run fdupes if needs be
     if args.report:
         report = args.report
     else:
+        # Run fdupes
+        proc = subprocess.Popen(['fdupes', '-r', '.'], stdout=subprocess.PIPE)
+
+        # Skip sets by extension
+        lines = skip(cfg['skipexts'], proc.stdout)
+
+        # Write leftover sets
         tmp = tempfile.NamedTemporaryFile()
-        subprocess.call(['fdupes', '-r', '.'], stdout=tmp)
+        print >> tmp, '\n'.join(lines)
+
+        # Start Vim
         subprocess.call(['vim', tmp.name])
+
+        # Set report file
         report = tmp.name
 
     # Process report

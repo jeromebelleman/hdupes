@@ -2,7 +2,8 @@
 
 mkdir -p tests/tmp/00
 touch tests/tmp/00/{a,b,c}
+echo a > tests/tmp/00/{a.foo,b.foo,c.foo}
 
-shelltest --execdir -c tests
+shelltest --debug --execdir -c tests
 
 rm -rf tests/tmp
