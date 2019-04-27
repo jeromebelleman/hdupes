@@ -3,6 +3,6 @@
 mkdir -p tests/tmp/00
 touch tests/tmp/00/{a,b,c}
 
-shelltest -c tests
+shelltest --execdir -c tests
 
 rm -rf tests/tmp
