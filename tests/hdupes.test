@@ -1,15 +1,15 @@
 # Pylint should pass
 pylint ../hdupes
->>>=0
+>>>= 0
 
-# The program should exit zero in dry-run and print the correct output
+# Exit zero in dry-run and print the correct output
 ../hdupes -nr report.fdupes
 >>> /ln -fs '.*\/hdupes\/tests\/tmp\/00\/b' 'tmp\/00\/c'
 rm -f 'tmp\/00\/a'
 Duplicate usage: 0 MB/
 >>>= 0
 
-# The program should exit zero and print the correct output
+# Exit zero and print the correct output
 ../hdupes -r report.fdupes
 >>> /ln -fs '.*\/hdupes\/tests\/tmp\/00\/b' 'tmp\/00\/c'
 rm -f 'tmp\/00\/a'
@@ -28,7 +28,7 @@ ls tmp/00/b
 ls -l tmp/00/c | grep -- '->'
 >>>= 0
 
-# Don't skip any sets if no skip extension supplied
+# Don't skip any sets if no skip extension was supplied
 python -c 'import hdupes; print "\n".join(hdupes.skip([], open("ext.fdupes"))).strip()'
 >>>
 ./a
