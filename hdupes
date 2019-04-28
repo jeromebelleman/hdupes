@@ -29,14 +29,6 @@ def run(dupeset, dryrun):
             os.remove(removal)
 
 
-def getargs(line):
-    '''
-    Get line arguments
-    '''
-
-    return ' '.join(line.split()[1:])
-
-
 def skip(exts, fhl):
     '''
     Skip sets by extension
@@ -111,11 +103,11 @@ def main():
             line = line.strip()
 
             if line.startswith('@ln '):
-                lineargs = getargs(line)
+                lineargs = line[4:]
                 dupeset['ln'].append(lineargs)
                 usage += os.path.getsize(lineargs)
             elif line.startswith('@rm '):
-                lineargs = getargs(line)
+                lineargs = line[4:]
                 dupeset['rm'].append(lineargs)
                 usage += os.path.getsize(lineargs)
             elif not line:
